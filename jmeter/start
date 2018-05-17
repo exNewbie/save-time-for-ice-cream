@@ -1,0 +1,5 @@
+#!/bin/bash
+# JMeter package is placed in the same folder
+# JMeter test files are stored under folder test-files 
+docker run -it -d --name jmeter --restart unless-stopped \
+-v `pwd`:/opt java /opt/jmeter/bin/jmeter -n -t /opt/test-files/google.com.au.jmx
