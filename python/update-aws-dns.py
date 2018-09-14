@@ -4,7 +4,6 @@ from optparse import OptionParser
 from boto.utils import get_instance_metadata
 import boto3
 import json
-import datetime
 import logging
 
 LOG_FILE = '/var/log/update-aws-dns.log'
