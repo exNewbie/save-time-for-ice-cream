@@ -57,7 +57,7 @@ if [ "$SOURCE_DB" == '' ]; then
         exit 1;
 fi
 
-write_log "$0 -s $SOURCE_DB starting...";
+write_log "$0 -d $SOURCE_DB starting...";
 
 EXPORT_FILE="${SOURCE_DB}.json"
 export_data;
