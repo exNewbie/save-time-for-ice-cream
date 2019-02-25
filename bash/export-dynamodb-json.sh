@@ -7,7 +7,7 @@ MAX_ITEMS=200;
 
 print_usage() {
    echo "[USAGE] $0 -d [Source DB Identifier]";
-   echo "[Example: ] $0 -d LogEntries_plantminernzlive";
+   echo "[Example: ] $0 -d mytable";
    exit 1;
 }
 
