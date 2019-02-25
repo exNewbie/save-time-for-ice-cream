@@ -1,13 +1,13 @@
 #!/bin/bash
 
 LOG_FILE="${0}.log";
-AWS_CMD="/usr/local/bin/aws";
+AWS_CMD="/usr/bin/aws";
 JQ_CMD="/usr/bin/jq";
-MAX_ITEMS=200;
+MAX_ITEMS=10000;
 
 print_usage() {
    echo "[USAGE] $0 -d [Source DB Identifier]";
-   echo "[Example: ] $0 -d mytable";
+   echo "[Example: ] $0 -d LogEntries_plantminernzlive";
    exit 1;
 }
 
@@ -19,20 +19,22 @@ write_log() {
 export_data() {
 	token=$1;
 	if [ -z $token ]; then
-		data=$( $AWS_CMD dynamodb scan --table-name $SOURCE_DB --max-items $MAX_ITEMS );
+		$AWS_CMD dynamodb scan --table-name $SOURCE_DB --max-items $MAX_ITEMS > tmp_data;
 	else
-		data=$( $AWS_CMD dynamodb scan --table-name $SOURCE_DB --max-items $MAX_ITEMS --starting-token $token );
+		$AWS_CMD dynamodb scan --table-name $SOURCE_DB --max-items $MAX_ITEMS --starting-token $token > tmp_data;
 	fi
 
 	# write data to file
-	echo $data | jq -c .Items[] >> $EXPORT_FILE;
+	cat tmp_data | jq -r -c .Items[] >> $EXPORT_FILE;
 
 	# carry on if next_token exists
-	next_token=$( echo $data | jq -r .NextToken );
+	next_token=$( cat tmp_data | jq -r .NextToken );
 
 	if [ $next_token == "null" ]; then
+		rm tmp_data;
 		return 0;
 	else
+		sleep 60;
 		export_data $next_token;
 	fi
 }
@@ -57,7 +59,7 @@ if [ "$SOURCE_DB" == '' ]; then
         exit 1;
 fi
 
-write_log "$0 -d $SOURCE_DB starting...";
+write_log "$0 -s $SOURCE_DB starting...";
 
 EXPORT_FILE="${SOURCE_DB}.json"
 export_data;
