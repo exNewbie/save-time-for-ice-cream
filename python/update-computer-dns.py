@@ -15,7 +15,10 @@ def get_ip(interface):
   return
 
 def hostname_2_ip(hostname):
-  return socket.gethostbyname(hostname)
+  try:
+    return socket.gethostbyname(hostname)
+  finally:
+    return False
 
 LOG_FILE = '/var/log/update-computer-dns.log'
 SCRIPT = 'update-computer-dns.py'
@@ -86,3 +89,4 @@ if new_recordset_value != old_recordset_value:
 
 else:
   logger.info( 'Same IP address' )
+
