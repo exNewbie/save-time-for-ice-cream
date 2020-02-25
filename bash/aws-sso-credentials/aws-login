@@ -1,0 +1,46 @@
+#!/bin/bash
+
+WHOAMI=`whoami`
+AWS_HOME="/home/${WHOAMI}/.aws"
+AWS_CACHE="${AWS_HOME}/cli/cache"
+CRED_TEMPLATE="template-credentials"
+CURRENT_CRED="${AWS_HOME}/credentials"
+CURRENT_CONFIG="${AWS_HOME}/config"
+SSO_PROFILE=$1
+
+set -e
+
+## Validations
+if [ "$SSO_PROFILE" == '' ]; then
+  echo "SSO profile not found";
+  exit 1;
+fi
+
+## Login SSO
+aws sso login --profile ${SSO_PROFILE}
+
+## Look for the latest credential file
+SHORT_ACCESS_KEY=`aws configure list | grep access_key | awk '{print $2;}' | tr -d '*'`
+
+CRED_FILE=`grep -l ${SHORT_ACCESS_KEY} ${AWS_CACHE}/*`
+
+ACCESS_STG=`cat ${CRED_FILE} | jq -r '.Credentials.AccessKeyId'`
+ACCESS_PROD=`cat ${CRED_FILE} | jq -r '.Credentials.AccessKeyId'`
+
+SECRET_STG=`cat ${CRED_FILE} | jq -r '.Credentials.SecretAccessKey'`
+SECRET_PROD=`cat ${CRED_FILE} | jq -r '.Credentials.SecretAccessKey'`
+
+TOKEN_STG=`cat ${CRED_FILE} | jq -r '.Credentials.SessionToken'`
+TOKEN_PROD=`cat ${CRED_FILE} | jq -r '.Credentials.SessionToken'`
+
+## Populate credential values
+cp -a ${CRED_TEMPLATE} ${CURRENT_CRED}
+
+sed -i "s|ACCESS_PROD|${ACCESS_PROD}|g" ${CURRENT_CRED}
+sed -i "s|ACCESS_STG|${ACCESS_STG}|g" ${CURRENT_CRED}
+
+sed -i "s|SECRET_PROD|${SECRET_PROD}|g" ${CURRENT_CRED}
+sed -i "s|SECRET_STG|${SECRET_STG}|g" ${CURRENT_CRED}
+
+sed -i "s|TOKEN_PROD|${TOKEN_PROD}|g" ${CURRENT_CRED}
+sed -i "s|TOKEN_STG|${TOKEN_STG}|g" ${CURRENT_CRED}
