@@ -3,7 +3,7 @@ set -eu +o pipefail
 
 LOG_FILE="/tmp/mysql-kill-idle-connections.log";
 TIMEOUT=1000;
-MYSQL_CLIENT=/etc/MYSQL_STAGE
+MYSQL_CLIENT=/root/.MYSQL_CONF
 
 main() {
   echo -e "\n-------------------------------------MySQL Session Proc Kill START-------------------------------------" &>> $LOG_FILE;
