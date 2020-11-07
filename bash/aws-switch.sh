@@ -5,9 +5,8 @@ RETVAL=0
 WHOAMI=`whoami`
 AWS_DIR="$HOME/.aws/"
 ENV=$( ls ${AWS_DIR}credentials-* | cut -d '-' -f2- )
-AWS_CONF="/Users/${WHOAMI}/.aws/credentials"
-ACTUAL_AWS_CONF=`/usr/bin/readlink $AWS_CONF`
-TMP_AWS_CONF="/Users/${WHOAMI}/.aws/credentials"
+AWS_CONF="credentials"
+ACTUAL_AWS_CONF=`readlink $AWS_CONF`
 
 list() {
   for i in ${ENV[@]}; do
@@ -28,8 +27,9 @@ switch() {
 
   for i in ${ENV[@]}; do
     if [[ $ACTUAL_AWS_CONF != *${i}* ]]; then
-      /bin/unlink $AWS_CONF;
-      ln -s ${TMP_AWS_CONF}-${switch_to} $AWS_CONF
+      cd $AWS_DIR;
+      unlink $AWS_CONF 2> /dev/null;
+      ln -s ${AWS_CONF}-${switch_to} $AWS_CONF
       continue;
     fi
   done  
@@ -52,3 +52,4 @@ case "$1" in
 esac
 
 exit $RETVAL
+

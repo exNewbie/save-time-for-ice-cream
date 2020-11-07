@@ -9,6 +9,13 @@ CURRENT_CONFIG="${AWS_HOME}/config"
 SSO_PROFILE=$1
 ASSUME_ROLE_PROFILE=$2
 
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+    CMD_SED='gsed'
+else
+    CMD_SED='sed'
+fi
+
 set -e
 
 ## Validations
