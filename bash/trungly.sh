@@ -19,7 +19,7 @@ elif [[ ${DISTRO_PROC} = *"ubuntu"* || ${DISTRO_RELEASE} = *"ubuntu"* || ${DISTR
 
   #User
   if ! cat /etc/passwd | grep trungly > /dev/null ; then
-    useradd -s /bin/bash -m trungly -G sudo; 
+    useradd -s /bin/bash -m trungly -G sudo
   fi
 
 else
