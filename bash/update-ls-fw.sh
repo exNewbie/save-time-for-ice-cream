@@ -1,8 +1,11 @@
 #!/bin/bash
 
 MY_IP=$( curl -s ifconfig.io )
-PORT_INFOS='[{ "protocol": "TCP", "fromPort": 22, "toPort": 22 }, { "protocol": "UDP", "fromPort": 1194, "toPort": 1194 }, { "protocol": "TCP", "fromPort": 53, "toPort": 53, "cidrs": [ "TEMPLATE_IP" ] }, { "protocol": "UDP", "fromPort": 53, "toPort": 53, "cidrs": [ "TEMPLATE_IP" ] }]'
+OFFICE_IP="x.x.x.x/32"
+
+PORT_INFOS='[{ "protocol": "TCP", "fromPort": 32, "toPort": 32 }, { "protocol": "TCP", "fromPort": 33, "toPort": 33 }, { "protocol": "UDP", "fromPort": 1194, "toPort": 1194 }, { "protocol": "TCP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "UDP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "TCP", "fromPort": 1081, "toPort": 1081, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }]'
 PORT_INFOS="${PORT_INFOS//TEMPLATE_IP/$MY_IP\/32}"
+PORT_INFOS="${PORT_INFOS//OFFICE_IP/$OFFICE_IP}"
 
 echo "Current IP: ${MY_IP}"
 
@@ -32,6 +35,6 @@ if [ "$INSTANCE_NAME" == '' ]; then
         exit 1;
 fi
 
-aws --profile ${PROFILE} lightsail put-instance-public-ports \
+/usr/local/bin/aws --profile ${PROFILE} lightsail put-instance-public-ports \
   --instance-name ${INSTANCE_NAME} \
   --port-infos "${PORT_INFOS}"
