@@ -3,7 +3,7 @@
 MY_IP=$( curl -s ifconfig.io )
 OFFICE_IP="x.x.x.x/32"
 
-PORT_INFOS='[{ "protocol": "TCP", "fromPort": 32, "toPort": 32 }, { "protocol": "TCP", "fromPort": 33, "toPort": 33 }, { "protocol": "UDP", "fromPort": 1194, "toPort": 1194 }, { "protocol": "TCP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "UDP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "TCP", "fromPort": 1081, "toPort": 1081, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }]'
+PORT_INFOS='[{ "protocol": "TCP", "fromPort": 32, "toPort": 32 }, { "protocol": "TCP", "fromPort": 33, "toPort": 33 }, { "protocol": "UDP", "fromPort": 1194, "toPort": 1194 }, { "protocol": "TCP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "UDP", "fromPort": 53, "toPort": 53, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "TCP", "fromPort": 1081, "toPort": 1081, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }, { "protocol": "TCP", "fromPort": 82, "toPort": 82, "cidrs": [ "OFFICE_IP", "TEMPLATE_IP" ] }]'
 PORT_INFOS="${PORT_INFOS//TEMPLATE_IP/$MY_IP\/32}"
 PORT_INFOS="${PORT_INFOS//OFFICE_IP/$OFFICE_IP}"
 
