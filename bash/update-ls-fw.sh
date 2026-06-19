@@ -2,11 +2,7 @@
 
 MY_IP=$( curl -s ifconfig.io )
 
-ALLOW_ALL='[
-  {"protocol": "TCP", "fromPort": 32, "toPort": 32},
-  {"protocol": "TCP", "fromPort": 33, "toPort": 33},
-  {"protocol": "UDP", "fromPort": 1194, "toPort": 1194}
-]'
+ALLOW_ALL='[{"protocol":"TCP","fromPort":80,"toPort":80},{"protocol":"TCP","fromPort":443,"toPort":443},{"protocol":"UDP","fromPort":53,"toPort":53}]'
 
 echo "Current IP: ${MY_IP}"
 
@@ -49,23 +45,19 @@ fi
 
 INSTANCE_PUB_IP=$( aws --profile ${PROFILE} lightsail get-instance --instance-name ${INSTANCE_NAME} --query 'instance.publicIpAddress' --output text )
 
-TRUSTED_ENTRIES=$(jq -n \
+TRUSTED_ENTRIES=$(jq -cn \
   --arg my_ip "${MY_IP}/32" \
   --arg instance_ip "${INSTANCE_PUB_IP}/32" \
-  '[
-    {"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$my_ip]},
-    {"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$instance_ip]}
-  ]')
+  '[{"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$my_ip]},{"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$instance_ip]}]')
 
 CONFIG_ENTRIES=$(jq '[.[] | .ip as $ip | .ports[] | {"protocol": (.protocol | ascii_upcase), "fromPort": .port, "toPort": .port, "cidrs": [$ip]}]' "$CONFIG_FILE")
 
-PORT_INFOS=$(jq -n \
+PORT_INFOS=$(jq -cn \
   --argjson allow_all "$ALLOW_ALL" \
   --argjson trusted "$TRUSTED_ENTRIES" \
   --argjson config "$CONFIG_ENTRIES" \
   '$allow_all + $trusted + $config')
 
-/usr/local/bin/aws --profile ${PROFILE} lightsail put-instance-public-ports \
+aws --profile ${PROFILE} lightsail put-instance-public-ports \
   --instance-name ${INSTANCE_NAME} \
   --port-infos "${PORT_INFOS}"
-
