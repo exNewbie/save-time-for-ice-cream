@@ -1,0 +1,22 @@
+[
+  {
+    "location": "OFFICE_IP",
+    "ip": "1.2.3.4/32",
+    "ports": [
+      {"port": 53, "protocol": "tcp"},
+      {"port": 53, "protocol": "udp"},
+      {"port": 1081, "protocol": "tcp"},
+      {"port": 82, "protocol": "tcp"},
+      {"port": 9091, "protocol": "tcp"},
+      {"port": 8097, "protocol": "tcp"}
+    ]
+  },
+  {
+    "location": "HOME_IP",
+    "ip": "2.3.4.5/32",
+    "ports": [
+      {"port": 443, "protocol": "tcp"},
+      {"port": 53, "protocol": "tcp"}
+    ]
+  }
+]
