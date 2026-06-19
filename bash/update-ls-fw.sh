@@ -59,6 +59,12 @@ TRUSTED_ENTRIES=$(jq -n \
 
 CONFIG_ENTRIES=$(jq '[.[] | .ip as $ip | .ports[] | {"protocol": (.protocol | ascii_upcase), "fromPort": .port, "toPort": .port, "cidrs": [$ip]}]' "$CONFIG_FILE")
 
+PORT_INFOS=$(jq -n \
+  --argjson allow_all "$ALLOW_ALL" \
+  --argjson trusted "$TRUSTED_ENTRIES" \
+  --argjson config "$CONFIG_ENTRIES" \
+  '$allow_all + $trusted + $config')
+
 /usr/local/bin/aws --profile ${PROFILE} lightsail put-instance-public-ports \
   --instance-name ${INSTANCE_NAME} \
   --port-infos "${PORT_INFOS}"
