@@ -49,6 +49,16 @@ fi
 
 INSTANCE_PUB_IP=$( aws --profile ${PROFILE} lightsail get-instance --instance-name ${INSTANCE_NAME} --query 'instance.publicIpAddress' --output text )
 
+TRUSTED_ENTRIES=$(jq -n \
+  --arg my_ip "${MY_IP}/32" \
+  --arg instance_ip "${INSTANCE_PUB_IP}/32" \
+  '[
+    {"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$my_ip]},
+    {"protocol": "ALL", "fromPort": 0, "toPort": 65535, "cidrs": [$instance_ip]}
+  ]')
+
+CONFIG_ENTRIES=$(jq '[.[] | .ip as $ip | .ports[] | {"protocol": (.protocol | ascii_upcase), "fromPort": .port, "toPort": .port, "cidrs": [$ip]}]' "$CONFIG_FILE")
+
 /usr/local/bin/aws --profile ${PROFILE} lightsail put-instance-public-ports \
   --instance-name ${INSTANCE_NAME} \
   --port-infos "${PORT_INFOS}"
